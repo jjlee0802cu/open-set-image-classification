@@ -71,3 +71,21 @@ model.fit(train_x, train_y, epochs=5)
 
 
 
+
+
+
+# Testing
+correct, total = 1, 1
+
+predictions = model.predict(test_x)
+for i in range(predictions.shape[0]):
+    softmax_output = predictions[i]
+
+    y_pred = np.argmax(softmax_output)
+    y_test = test_y[i]
+
+    if y_pred == y_test:
+        correct += 1
+    total += 1
+
+print(correct/total)
