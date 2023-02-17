@@ -2,34 +2,30 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-
-
-
-
-
 # Get Fashion MNIST dataset
 fashion_mnist = keras.datasets.fashion_mnist
 (train_x, train_y), (test_x, test_y) = fashion_mnist.load_data()
 
-
-
-
+# Convert all to float types
+train_x = train_x.astype(float)
+train_y = train_y.astype(float)
+test_x = test_x.astype(float)
+test_y = test_y.astype(float)
 
 # Leave out 5 of the classes during training. Classes 5-9 are designated as "unkown"
 """
 Original split:
     Train: 60000 samples
-        0-9 have 6000 samples
+        0~9 have 6000 samples each
     Test: 10000 samples
-        0-9 have 1000 samples
+        0~9 have 1000 samples each
 
 Resulting split:
     Train: 30000 samples
-        0-4 have 6000 samples
+        0~4 have 6000 samples each
     Test: 40000 samples
-        0-4 have 1000 samples
-        5-9 have 7000 samples
-
+        0~4 have 1000 samples each
+        -5~-9 has 7000 samples each
 """
 known_x, known_y = [], []
 unknown_x, unknown_y = [], []
@@ -46,10 +42,10 @@ train_y = np.array(known_y)
 test_x = np.concatenate((test_x, np.array(unknown_x)), axis=0)
 test_y = np.concatenate((test_y, np.array(unknown_y)), axis=0)
 
-print(train_x.shape, train_y.shape)
-print(test_x.shape, test_y.shape)
-
-
+# Change labels of unkown classes to be negative numbers
+for i in range(len(test_y)):
+    if test_y[i] >= 5:
+        test_y[i] = -test_y[i] + 4
 
 
 
@@ -75,17 +71,19 @@ model.fit(train_x, train_y, epochs=5)
 
 
 # Testing
-correct, total = 1, 1
-
 predictions = model.predict(test_x)
+
+
+correct, total = 1, 1
 for i in range(predictions.shape[0]):
     softmax_output = predictions[i]
 
     y_pred = np.argmax(softmax_output)
     y_test = test_y[i]
 
-    if y_pred == y_test:
-        correct += 1
-    total += 1
+    if y_test >= 0:
+        if y_pred == y_test:
+            correct += 1
+        total += 1
 
 print(correct/total)
