@@ -3,6 +3,8 @@ import tensorflow as tf
 from tensorflow import keras
 import matplotlib.pyplot as plt
 from keras.optimizers import SGD
+from sklearn.metrics import confusion_matrix
+import seaborn
 
 # Get Fashion MNIST dataset
 '''
@@ -237,7 +239,22 @@ plt.ylabel('False Negative Rate')
 plt.savefig('./plots/fashion_mnist/det.png')
 
 
+cm_test, cm_pred = [], []
+best_threshold_predictions = apply_threshold_top_N(0.8, predictions, 1)
+for i in range(len(best_threshold_predictions)):
+    if sign(best_threshold_predictions[i]) >= 0 and sign(test_y[i]) >= 0:
+        cm_test.append(test_y[i])
+        cm_pred.append(min(best_threshold_predictions[i]))
+cm = confusion_matrix(cm_test, cm_pred)
+cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
 
+fig, ax = plt.subplots(figsize=(10,10))
+seaborn.heatmap(cm, cmap="Blues", annot=True, fmt='.2f')
+plt.ylabel('True Label')
+plt.xlabel('Predicted Label')
+plt.savefig('./plots/fashion_mnist/confusion_matrix.png')
 
-
-
+'''
+The confusion matrix shows that class 4 is hardest to predict: Coat
+It confuses class 4 with class 2, which is Pullover
+'''
