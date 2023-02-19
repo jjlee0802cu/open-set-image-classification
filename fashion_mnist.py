@@ -171,8 +171,6 @@ for threshold in threshold_to_test:
                 fpr['correct'] += 1
             else: # true negative
                 tnr['correct'] += 1
-        
-
 
         # Out of known samples that were labeled as known, how many were labeled correctly
         if sign(threshold_predictions[i]) >= 0 and sign(test_y[i]) >= 0:
@@ -190,7 +188,10 @@ for threshold in threshold_to_test:
 
 plt.clf()
 plt.plot(threshold_to_test,  id_accuracies)
-plt.savefig('./id.png')
+plt.axis([-0.05, 1.05, -0.05, 1.05])
+plt.xlabel('Threshold')
+plt.ylabel('Accuracy')
+plt.savefig('./plots/fashion_mnist/id_accuracy.png')
 
 plt.clf()
 plt.plot(threshold_to_test,  tpr_list, label='TPR')
@@ -198,5 +199,23 @@ plt.plot(threshold_to_test,  fpr_list, label='FPR')
 plt.plot(threshold_to_test,  fnr_list, label='FNR')
 plt.plot(threshold_to_test,  tnr_list, label='TNR')
 plt.legend(loc="best")
-plt.savefig('./rates.png')
+plt.axis([-0.05, 1.05, -0.05, 1.05])
+plt.xlabel('Threshold')
+plt.ylabel('Rates')
+plt.savefig('./plots/fashion_mnist/all_rates.png')
+
+plt.clf()
+plt.plot(fpr_list, tpr_list)
+plt.axis([-0.05, 1.05, -0.05, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.savefig('./plots/fashion_mnist/roc.png')
+
+plt.clf()
+plt.plot(fpr_list, fnr_list)
+plt.axis([-0.05, 1.05, -0.05, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('False Negative Rate')
+plt.savefig('./plots/fashion_mnist/det.png')
+
 
