@@ -123,8 +123,21 @@ test_y = np.concatenate((test_y, omniglot_y), axis=0)
 
 
 
+
+
 print("\nTraining model")
-#todo
+model = keras.Sequential()
+model.add(Conv2D(filters=16, kernel_size=(3, 3), padding='same', activation='relu', input_shape=(train_x[0].shape[0], train_x[0].shape[1], 1)))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Flatten())
+model.add(Dense(64, activation=tf.nn.relu))
+model.add(Dense(64, activation=tf.nn.relu))
+model.add(Dense(10, activation=tf.nn.softmax))
+model.compile(optimizer=SGD(lr=0.01, momentum=0.9), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.fit(train_x, train_y, epochs=10, batch_size=64)
+
+
+
 
 exit()
 
