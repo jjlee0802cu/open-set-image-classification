@@ -9,6 +9,7 @@ from sklearn.metrics import confusion_matrix
 import seaborn
 import tensorflow_datasets as tfds
 from tensorflow.python.ops.numpy_ops import np_config
+from scipy.ndimage.filters import gaussian_filter
 np_config.enable_numpy_behavior()
 
 
@@ -72,15 +73,20 @@ omniglot_y = omniglot_train_y + omniglot_test_y
 # Pre-process omniglot images
 '''
 resize to 28x28 (same size as mnist images)
-make grayscale
+make make values be between 0 and 1 just like mnist was normalized
 flip pixels so that it's black background, white foreground
+add a little bit of gaussian filter to blur it
 '''
-omniglot_x = [(1.0 - tf.image.resize(tf.image.rgb_to_grayscale(i), [28, 28]))[:, :, 0] for i in omniglot_x]
-
+omniglot_x = [(gaussian_filter(1.0 - (tf.image.resize(i, [28, 28])/255.0), sigma=0.5))[:, :, 0] for i in omniglot_x]
 
 # Change labels of unkown classes to be negative numbers
 for i in range(len(omniglot_y)):
-    omniglot_y[i] = -omniglot_y[i] -1
+    omniglot_y[i] = -1
+
+
+
+
+
 
 
 
@@ -115,31 +121,19 @@ test_y = np.concatenate((test_y, omniglot_y), axis=0)
 
 
 
-
-
-
-
-
-
-
-
-
-
 print("\nTraining model")
 model = keras.Sequential()
-model.add(Conv2D(filters=16, kernel_size=(3, 3), padding='same', activation='relu', input_shape=(train_x[0].shape[0], train_x[0].shape[1], 1)))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Flatten())
-model.add(Dense(64, activation=tf.nn.relu))
-model.add(Dense(64, activation=tf.nn.relu))
-model.add(Dense(10, activation=tf.nn.softmax))
-model.compile(optimizer=SGD(lr=0.01, momentum=0.9), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model.fit(train_x, train_y, epochs=10, batch_size=64)
+model.add(keras.layers.Conv2D(filters=4, kernel_size=(3, 3), padding='same', activation='relu', input_shape=(train_x[0].shape[0], train_x[0].shape[1], 1)))
+model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+model.add(keras.layers.Flatten(input_shape=(28, 28)))
+model.add(keras.layers.Dense(32, activation=tf.nn.relu))
+model.add(keras.layers.Dense(10, activation=tf.nn.softmax))
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.fit(train_x, train_y, epochs=5)
 
 
 
 
-exit()
 
 
 
@@ -269,7 +263,7 @@ plt.ylabel('True Positive Rate')
 plt.savefig('./plots/mnist/roc.png')
 
 plt.clf()
-plt.plot(fpr_list, fnr_list)
+plt.plot(fpr_list, fnr_list, '-o')
 plt.axis([-0.05, 1.05, -0.05, 1.05])
 plt.xlabel('False Positive Rate')
 plt.ylabel('False Negative Rate')
