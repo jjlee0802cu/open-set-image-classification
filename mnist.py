@@ -4,89 +4,42 @@ import tensorflow as tf
 from tensorflow import keras
 import matplotlib.pyplot as plt
 from keras.optimizers import SGD
+from tensorflow.keras.layers import *
 from sklearn.metrics import confusion_matrix
 import seaborn
+import tensorflow_datasets as tfds
+from tensorflow.python.ops.numpy_ops import np_config
+np_config.enable_numpy_behavior()
 
-# Get Fashion MNIST dataset
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Get MNIST dataset
 '''
-Original split:
-    Train: 60000 samples
-        0: 6000 samples
-        1: 6000 samples
-        2: 6000 samples
-        3: 6000 samples
-        4: 6000 samples
-        5: 6000 samples
-        6: 6000 samples
-        7: 6000 samples
-        8: 6000 samples
-        9: 6000 samples
-    Test: 10000 samples
-        0: 1000 samples
-        1: 1000 samples
-        2: 1000 samples
-        3: 1000 samples
-        4: 1000 samples
-        5: 1000 samples
-        6: 1000 samples
-        7: 1000 samples
-        8: 1000 samples
-        9: 1000 samples
+Train: 60000 samples
+    labels: 0-9
+    around 6000 samples per label
+Test: 10000 samples
+    labels: 0-9
+    around 1000 samples per label
 '''
-train_x, train_y, test_x, test_y = load_keras_dataset(keras.datasets.fashion_mnist)
-
-# Convert all to float types
-train_x = train_x.astype(float)
-train_y = train_y.astype(float)
-test_x = test_x.astype(float)
-test_y = test_y.astype(float)
-
-# Leave out 5 of the classes during training. Classes 5-9 are designated as "unkown"
-known_x, known_y = [], []
-unknown_x, unknown_y = [], []
-for i in range(train_x.shape[0]):
-    if train_y[i] >= 5:
-        unknown_x.append(train_x[i])
-        unknown_y.append(train_y[i])
-    else:
-        known_x.append(train_x[i])
-        known_y.append(train_y[i])
-
-train_x = np.array(known_x)
-train_y = np.array(known_y)
-test_x = np.concatenate((test_x, np.array(unknown_x)), axis=0)
-test_y = np.concatenate((test_y, np.array(unknown_y)), axis=0)
-
-# Change labels of unkown classes to be negative numbers
-for i in range(len(test_y)):
-    if test_y[i] >= 5:
-        test_y[i] = -test_y[i] + 4
-"""
-New split:
-    Train: 30000 samples
-        0: 6000 samples
-        1: 6000 samples
-        2: 6000 samples
-        3: 6000 samples
-        4: 6000 samples
-    Test: 40000 samples
-        0: 1000 samples
-        1: 1000 samples
-        2: 1000 samples
-        3: 1000 samples
-        4: 1000 samples
-        -1: 7000 samples
-        -2: 7000 samples
-        -3: 7000 samples
-        -4: 7000 samples
-        -5: 7000 samples
-"""
-print()
+train_x, train_y, test_x, test_y = load_keras_dataset(keras.datasets.mnist)
 
 
-
-
-# preprocess & normalization
+# Pre-process MNIST dataset
+'''
+make grayscale
+'''
 train_x = train_x / 255.0
 test_x = test_x / 255.0
 
@@ -95,14 +48,85 @@ test_x = test_x / 255.0
 
 
 
-print("\nTraining model")
-model = keras.Sequential()
-model.add(keras.layers.Flatten(input_shape=(28, 28)))
-model.add(keras.layers.Dense(128, activation=tf.nn.relu))
-model.add(keras.layers.Dense(10, activation=tf.nn.softmax))
-model.compile(optimizer=SGD(lr=0.01, momentum=0.9), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model.fit(train_x, train_y, epochs=10)
 
+
+
+
+
+
+
+
+
+
+# Get Omniglot dataset (combine omniglot train and test into 1 omniglot dataset since they are all going to be unkown samples)
+'''
+32,460 samples in total
+1623 labels with 20 samples per label
+'''
+omniglot_train_x, omniglot_train_y = load_omniglot('train')
+omniglot_test_x, omniglot_test_y = load_omniglot('test')
+omniglot_x = omniglot_train_x + omniglot_test_x
+omniglot_y = omniglot_train_y + omniglot_test_y
+
+
+# Pre-process omniglot images
+'''
+resize to 28x28 (same size as mnist images)
+make grayscale
+flip pixels so that it's black background, white foreground
+'''
+omniglot_x = [(1.0 - tf.image.resize(tf.image.rgb_to_grayscale(i), [28, 28]))[:, :, 0] for i in omniglot_x]
+
+
+# Change labels of unkown classes to be negative numbers
+for i in range(len(omniglot_y)):
+    omniglot_y[i] = -omniglot_y[i] -1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Make final train/test sets
+'''
+Train: 60000 samples
+    labels: 0-9
+    around 6000 samples per label
+Test: 42,460 samples
+    labels: -1623~9
+        labels -1623~-1 have 20 samples per label
+        labels 0~9 have approx 1000 samples per label 
+'''
+omniglot_x = np.array(omniglot_x)
+omniglot_y = np.array(omniglot_y)
+test_x = np.concatenate((test_x, omniglot_x), axis=0)
+test_y = np.concatenate((test_y, omniglot_y), axis=0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+print("\nTraining model")
+#todo
+
+exit()
 
 
 
@@ -203,7 +227,7 @@ plt.clf()
 plt.plot(threshold_to_test, id_accuracies[0])
 plt.xlabel('Threshold')
 plt.ylabel('Accuracy')
-plt.savefig('./plots/fashion_mnist/id_accuracy.png')
+plt.savefig('./plots/mnist/id_accuracy.png')
 
 plt.clf()
 for i in range(len(id_accuracies)):
@@ -211,7 +235,7 @@ for i in range(len(id_accuracies)):
 plt.legend(loc="best")
 plt.xlabel('Threshold')
 plt.ylabel('Accuracy')
-plt.savefig('./plots/fashion_mnist/top_N_id_accuracy.png')
+plt.savefig('./plots/mnist/top_N_id_accuracy.png')
 
 plt.clf()
 plt.plot(threshold_to_test,  tpr_list, label='TPR')
@@ -222,21 +246,21 @@ plt.legend(loc="best")
 plt.axis([-0.05, 1.05, -0.05, 1.05])
 plt.xlabel('Threshold')
 plt.ylabel('Rates')
-plt.savefig('./plots/fashion_mnist/all_rates.png')
+plt.savefig('./plots/mnist/all_rates.png')
 
 plt.clf()
 plt.plot(fpr_list, tpr_list)
 plt.axis([-0.05, 1.05, -0.05, 1.05])
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
-plt.savefig('./plots/fashion_mnist/roc.png')
+plt.savefig('./plots/mnist/roc.png')
 
 plt.clf()
 plt.plot(fpr_list, fnr_list)
 plt.axis([-0.05, 1.05, -0.05, 1.05])
 plt.xlabel('False Positive Rate')
 plt.ylabel('False Negative Rate')
-plt.savefig('./plots/fashion_mnist/det.png')
+plt.savefig('./plots/mnist/det.png')
 
 
 cm_test, cm_pred = [], []
@@ -252,7 +276,7 @@ fig, ax = plt.subplots(figsize=(10,10))
 seaborn.heatmap(cm, cmap="Blues", annot=True, fmt='.2f')
 plt.ylabel('True Label')
 plt.xlabel('Predicted Label')
-plt.savefig('./plots/fashion_mnist/confusion_matrix.png')
+plt.savefig('./plots/mnist/confusion_matrix.png')
 
 '''
 The confusion matrix shows that class 4 is hardest to predict: Coat
