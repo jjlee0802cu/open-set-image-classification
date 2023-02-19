@@ -240,7 +240,11 @@ plt.savefig('./plots/fashion_mnist/det.png')
 
 
 cm_test, cm_pred = [], []
+<<<<<<< HEAD
 best_threshold_predictions = apply_threshold_top_N(0.8, predictions, 1)
+=======
+best_threshold_predictions = apply_threshold_top_N(0.85, predictions, 1)
+>>>>>>> 0b1ef190cc615361daaa65e1c62b3489bfe0fba2
 for i in range(len(best_threshold_predictions)):
     if sign(best_threshold_predictions[i]) >= 0 and sign(test_y[i]) >= 0:
         cm_test.append(test_y[i])
@@ -255,6 +259,11 @@ plt.xlabel('Predicted Label')
 plt.savefig('./plots/fashion_mnist/confusion_matrix.png')
 
 '''
+<<<<<<< HEAD
 The confusion matrix shows that class 4 is hardest to predict: Coat
 It confuses class 4 with class 2, which is Pullover
+=======
+The confusion matrix shows that class 2 is hardest to predict: Pullover
+It confuses class 2 with class 4, which is Coat
+>>>>>>> 0b1ef190cc615361daaa65e1c62b3489bfe0fba2
 '''
