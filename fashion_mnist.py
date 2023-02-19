@@ -1,8 +1,8 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from sklearn.metrics import DetCurveDisplay
 import matplotlib.pyplot as plt
+from keras.optimizers import SGD
 
 # Get Fashion MNIST dataset
 '''
@@ -84,22 +84,22 @@ print()
 
 
 
-
-print("\nTraining model")
-# normalization
+# preprocess & normalization
 train_x = train_x / 255.0
 test_x = test_x / 255.0
 
-# this one uses cnn: https://machinelearningmastery.com/how-to-develop-a-cnn-from-scratch-for-fashion-mnist-clothing-classification/
 
-# this is baseline model from https://www.kaggle.com/code/arunkumarramanan/awesome-cv-with-fashion-mnist-classification/notebook
-model = keras.Sequential([
-    keras.layers.Flatten(input_shape=(28, 28)),
-    keras.layers.Dense(128, activation=tf.nn.relu),
-    keras.layers.Dense(10, activation=tf.nn.softmax)
-])
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model.fit(train_x, train_y, epochs=5)
+
+
+
+
+print("\nTraining model")
+model = keras.Sequential()
+model.add(keras.layers.Flatten(input_shape=(28, 28)))
+model.add(keras.layers.Dense(128, activation=tf.nn.relu))
+model.add(keras.layers.Dense(10, activation=tf.nn.softmax))
+model.compile(optimizer=SGD(lr=0.01, momentum=0.9), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.fit(train_x, train_y, epochs=10)
 
 
 
