@@ -6,7 +6,15 @@ Justin Lee (UNI: jjl2245)
 
 ## Project Summary
 
+<details><summary>**Background**</summary>
+<p>
+
 Classification tasks require a model to learn how to take an input and assign it a label. Most classification tasks are closed-set classification tasks; in other words, the model assumes that the test data contains the same set of labels as the train data. The major shortcoming of this approach is real-world applicability: in many real-world problems, we may never be able to foresee and exhaust all possible classes during training. Open-set classifiers, on the other hand, acknowledge an incomplete knowledge of the label space and are classifiers that can reject the input and label it as “unknown” rather than assigning it an incorrect label. 
+
+</p>
+</details>
+
+
 
 **Goal**
 - Tackle the open-set image classification problem by building open-set image classification models that can not only accurately classify images from known classes, but also accurately reject images from unknown classes. 
