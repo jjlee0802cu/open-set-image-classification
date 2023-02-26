@@ -33,11 +33,8 @@ Original split:
 '''
 train_x, train_y, test_x, test_y = load_keras_dataset(keras.datasets.fashion_mnist)
 
-# Convert all to float types
-train_x = train_x.astype(float)
-train_y = train_y.astype(float)
-test_x = test_x.astype(float)
-test_y = test_y.astype(float)
+
+
 
 # Leave out 5 of the classes during training. Classes 5-9 are designated as "unkown"
 known_x, known_y = [], []
@@ -110,7 +107,3 @@ print("\nTesting model")
 
 threshold_to_test = np.linspace(0, 1, 50)
 perform_analysis(model, test_x, test_y, threshold_to_test, 'fashion_mnist', 0.8)
-'''
-The confusion matrix shows that class 4 is hardest to predict: Coat
-It confuses class 4 with class 2, which is Pullover
-'''

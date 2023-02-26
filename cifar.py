@@ -22,16 +22,13 @@ np_config.enable_numpy_behavior()
 
 
 
-
-
-
 # Get CIFAR-100 dataset
 '''
 Train: 50000 samples
     labels: 0-99
     500 samples per label
 Test: 10000 samples
-    labels: 0-9
+    labels: 0-99
     around 100 samples per label
 
 Each image is 32x32 in color
@@ -42,16 +39,38 @@ train_x, train_y, test_x, test_y = load_keras_dataset(keras.datasets.cifar100)
 
 
 
-# # Pre-process MNIST dataset
-# '''
-# make grayscale
-# '''
-# train_x = train_x / 255.0
-# test_x = test_x / 255.0
 
 
 
+# Leave out half (50) of the classes during training. Classes 50-99 are designated as "unkown"
+known_x, known_y = [], []
+unknown_x, unknown_y = [], []
+for i in range(train_x.shape[0]):
+    if train_y[i] >= 50:
+        unknown_x.append(train_x[i])
+        unknown_y.append(train_y[i])
+    else:
+        known_x.append(train_x[i])
+        known_y.append(train_y[i])
 
+train_x = np.array(known_x)
+train_y = np.array(known_y)
+test_x = np.concatenate((test_x, np.array(unknown_x)), axis=0)
+test_y = np.concatenate((test_y, np.array(unknown_y)), axis=0)
+
+# Change labels of unkown classes to be negative numbers
+for i in range(len(test_y)):
+    if test_y[i] >= 50:
+        test_y[i] = -1
+"""
+New split:
+    Train: 25000 samples
+        labels: 0-49
+        500 samples per label
+    Test: 35000 samples
+        labels: 0-49 have 100 samples per label
+        label -1 has 30000 samples
+"""
 
 
 
@@ -63,64 +82,6 @@ exit()
 
 
 
-
-# Get Omniglot dataset (combine omniglot train and test into 1 omniglot dataset since they are all going to be unkown samples)
-'''
-32,460 samples in total
-1623 labels with 20 samples per label
-'''
-omniglot_train_x, omniglot_train_y = load_omniglot('train')
-omniglot_test_x, omniglot_test_y = load_omniglot('test')
-omniglot_x = omniglot_train_x + omniglot_test_x
-omniglot_y = omniglot_train_y + omniglot_test_y
-
-
-# Pre-process omniglot images
-'''
-resize to 28x28 (same size as mnist images)
-make make values be between 0 and 1 just like mnist was normalized
-flip pixels so that it's black background, white foreground
-add a little bit of gaussian filter to blur it
-'''
-omniglot_x = [(gaussian_filter(1.0 - (tf.image.resize(i, [28, 28])/255.0), sigma=0.5))[:, :, 0] for i in omniglot_x]
-
-# Change labels of unkown classes to be negative numbers
-for i in range(len(omniglot_y)):
-    omniglot_y[i] = -1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Make final train/test sets
-'''
-Train: 60000 samples
-    labels: 0-9
-    around 6000 samples per label
-Test: 42,460 samples
-    labels: -1623~9
-        labels -1623~-1 have 20 samples per label
-        labels 0~9 have approx 1000 samples per label 
-'''
-omniglot_x = np.array(omniglot_x)
-omniglot_y = np.array(omniglot_y)
-test_x = np.concatenate((test_x, omniglot_x), axis=0)
-test_y = np.concatenate((test_y, omniglot_y), axis=0)
 
 
 
