@@ -43,10 +43,13 @@ $ python3 cifar.py
 - These 3 demo scripts do the following...
     - Load data from their respective datasets
     - Pre-process the data
-    - Create new train/test splits for the open-set image classification task
+    - Create new train and test splits for the open-set image classification task
     - Load the respective best models
+        - ```fashion_mnist.py``` loads ```saved_models/fashion_mnist.h5```
+        - ```mnist.py``` loads ```saved_models/mnist_cnn.h5```
+        - ```cifar.py``` loads ```saved_models/cifar_cnn.h5```
     - Perform analysis on said models
-    - Output analysis graphs into their respective folders.  
+    - Output analysis graphs into their respective folders
         - ```fashion_mnist.py``` outputs to ```plots/fashion_mnist```
         - ```mnist.py``` outputs to ```plots/mnist```
         - ```cifar.py``` outputs to ```plots/cifar```
