@@ -16,8 +16,8 @@ def load_keras_dataset(dataset):
     return train_x, train_y, test_x, test_y
 
 def print_counts_from_numpy(x):
-    elements, frequency = numpy.unique(x, return_counts=True)
-    print(numpy.asarray((elements, frequency)).T)
+    elements, frequency = np.unique(x, return_counts=True)
+    print(np.asarray((elements, frequency)).T)
 
 
 def load_omniglot(split='train'):
