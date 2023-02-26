@@ -121,7 +121,10 @@ test_y = np.concatenate((test_y, omniglot_y), axis=0)
 
 
 
-print("\nTraining model")
+print("\nTraining/Loading model")
+model_path = './saved_models/mnist_cnn.h5'
+train = False
+
 model = keras.Sequential()
 model.add(keras.layers.Conv2D(filters=4, kernel_size=(3, 3), padding='same', activation='relu', input_shape=(train_x[0].shape[0], train_x[0].shape[1], 1)))
 model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
@@ -129,9 +132,12 @@ model.add(keras.layers.Flatten(input_shape=(28, 28)))
 model.add(keras.layers.Dense(32, activation=tf.nn.relu))
 model.add(keras.layers.Dense(10, activation=tf.nn.softmax))
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model.fit(train_x, train_y, epochs=5)
 
-
+if train:
+    model.fit(train_x, train_y, epochs=5)
+    model.save(model_path)
+else:
+    model = keras.models.load_model(model_path)
 
 
 

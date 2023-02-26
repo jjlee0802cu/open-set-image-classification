@@ -88,19 +88,22 @@ test_x = test_x / 255.0
 
 
 
+print("\nTraining/Loading model")
+model_path = './saved_models/fashion_mnist.h5'
+train = False
 
-
-print("\nTraining model")
 model = keras.Sequential()
 model.add(keras.layers.Flatten(input_shape=(28, 28)))
 model.add(keras.layers.Dense(128, activation=tf.nn.relu))
 model.add(keras.layers.Dense(32, activation=tf.nn.relu))
 model.add(keras.layers.Dense(5, activation=tf.nn.softmax))
-model.compile(optimizer=SGD(lr=0.01, momentum=0.9), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-model.fit(train_x, train_y, epochs=10)
+model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.9), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-
-
+if train:
+    model.fit(train_x, train_y, epochs=10)
+    model.save(model_path)
+else:
+    model = keras.models.load_model(model_path)
 
 
 print("\nTesting model")
