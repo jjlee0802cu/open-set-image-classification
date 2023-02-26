@@ -10,6 +10,7 @@ import seaborn
 import tensorflow_datasets as tfds
 from tensorflow.python.ops.numpy_ops import np_config
 from scipy.ndimage.filters import gaussian_filter
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 np_config.enable_numpy_behavior()
 
 
@@ -90,12 +91,15 @@ test_x = test_x / 255.0
 
 print("\nTraining/Loading model")
 model_path = './saved_models/cifar_cnn.h5'
-train = False
+train = True
 
 model = keras.Sequential()
 model.add(keras.layers.Conv2D(32, 3, padding='same', activation='relu', input_shape=train_x[0].shape))
+model.add(keras.layers.BatchNormalization())
 model.add(keras.layers.Conv2D(64, 3, padding='same', activation='relu'))
+model.add(keras.layers.BatchNormalization())
 model.add(keras.layers.Conv2D(128, 3, padding='same', activation='relu'))
+model.add(keras.layers.BatchNormalization())
 model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
 model.add(keras.layers.Flatten())
 model.add(keras.layers.Dense(128, activation=tf.nn.relu))
@@ -108,11 +112,21 @@ model.add(keras.layers.Dense(50, activation=tf.nn.softmax))
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 if train:
-    model.fit(train_x, train_y, epochs=20, batch_size=128)
+    # Create validation set (which is the test set without the -1 labels)
+    val_x = np.array([test_x[i] for i in range(len(test_x)) if test_y[i] >= 0])
+    val_y = np.array([test_y[i] for i in range(len(test_x)) if test_y[i] >= 0])
+    # Create data augmeter using ImageDataGenerator
+    augmeter = ImageDataGenerator(rotation_range=20, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
+    augmeter.fit(train_x)
+    # Fit and save (uses real-time augmeter which is generating batches of size 128 of augmented data)
+    model.fit(augmeter.flow(train_x, train_y, batch_size=128), validation_data=(val_x, val_y), batch_size=128, epochs=50)
     model.save(model_path)
 else:
     model = keras.models.load_model(model_path)
 
+
+
+exit()
 
 
 print("\nTesting model")
@@ -120,3 +134,18 @@ threshold_to_test = np.linspace(0, 1, 200)
 # perform_analysis(model, test_x, test_y, threshold_to_test, 'cifar', 0.9, False)
 
 
+
+
+
+
+correct,total = 0,0
+predictions = model.predict(test_x)
+for i in range(len(test_y)):
+    a = np.argmax(predictions[i])
+    b = test_y[i]
+
+    if b >= 0:
+        total += 1
+        if a == b:
+            correct += 1
+print(correct/total)
