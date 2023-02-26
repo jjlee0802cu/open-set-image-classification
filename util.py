@@ -50,7 +50,7 @@ def get_accuracy(dictionary):
     except:
         return 1
 
-def perform_analysis(model, test_x, test_y, threshold_to_test, output_dir, cf_threshold):
+def perform_analysis(model, test_x, test_y, threshold_to_test, output_dir, cf_threshold, cf_annot=True):
     predictions = model.predict(test_x)
 
     tpr_list = []
@@ -159,7 +159,7 @@ def perform_analysis(model, test_x, test_y, threshold_to_test, output_dir, cf_th
     cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
 
     fig, ax = plt.subplots(figsize=(10,10))
-    seaborn.heatmap(cm, cmap="Blues", annot=True, fmt='.2f')
+    seaborn.heatmap(cm, cmap="Blues", annot=cf_annot, fmt='.2f')
     plt.ylabel('True Label')
     plt.xlabel('Predicted Label')
     plt.savefig('./plots/'+output_dir+'/confusion_matrix.png')

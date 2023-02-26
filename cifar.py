@@ -61,6 +61,10 @@ test_y = np.concatenate((test_y, np.array(unknown_y)), axis=0)
 for i in range(len(test_y)):
     if test_y[i] >= 50:
         test_y[i] = -1
+
+# Reformat dimensions for the labels (train_y and test_y)
+train_y = np.squeeze(train_y, axis=1)
+test_y = np.squeeze(test_y, axis=1)
 """
 New split:
     Train: 25000 samples
@@ -70,8 +74,6 @@ New split:
         labels: 0-49 have 100 samples per label
         label -1 has 30000 samples
 """
-
-
 
 
 
@@ -115,6 +117,6 @@ else:
 
 print("\nTesting model")
 threshold_to_test = np.linspace(0, 1, 200)
-perform_analysis(model, test_x, test_y, threshold_to_test, 'cifar', 0.9)
+# perform_analysis(model, test_x, test_y, threshold_to_test, 'cifar', 0.9, False)
 
 
