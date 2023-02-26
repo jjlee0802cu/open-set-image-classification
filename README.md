@@ -1,6 +1,8 @@
 # Open-Set Image Classification
 
-#### Justin Lee
+## Author
+
+Justin Lee (UNI: jjl2245)
 
 ## Project Summary
 
