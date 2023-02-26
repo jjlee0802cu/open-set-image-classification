@@ -113,36 +113,8 @@ else:
 
 
 
-exit()
-
 print("\nTesting model")
 threshold_to_test = np.linspace(0, 1, 200)
 perform_analysis(model, test_x, test_y, threshold_to_test, 'cifar', 0.9)
-
-
-'''
-
-Epoch 1/10
-196/196 [==============================] - 31s 158ms/step - loss: 3.3719 - accuracy: 0.1673
-Epoch 2/10
-196/196 [==============================] - 30s 155ms/step - loss: 2.6012 - accuracy: 0.3136
-Epoch 3/10
-196/196 [==============================] - 31s 158ms/step - loss: 2.0985 - accuracy: 0.4257
-Epoch 4/10
-196/196 [==============================] - 31s 156ms/step - loss: 1.6988 - accuracy: 0.5236
-Epoch 5/10
-196/196 [==============================] - 30s 155ms/step - loss: 1.3383 - accuracy: 0.6232
-Epoch 6/10
-196/196 [==============================] - 30s 155ms/step - loss: 0.9365 - accuracy: 0.7313
-Epoch 7/10
-196/196 [==============================] - 30s 153ms/step - loss: 0.5375 - accuracy: 0.8526
-Epoch 8/10
-196/196 [==============================] - 30s 152ms/step - loss: 0.2891 - accuracy: 0.9258
-Epoch 9/10
-196/196 [==============================] - 30s 152ms/step - loss: 0.1443 - accuracy: 0.9688
-Epoch 10/10
-196/196 [==============================] - 31s 161ms/step - loss: 0.0869 - accuracy: 0.9832
-
-'''
 
 
