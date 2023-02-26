@@ -10,12 +10,12 @@ asdfasdf
 
 - Python3 environment
 - Python libraries: 
-    - tensorflow, tensorflow_datasets, keras
-    - numpy
-    - matplotlib
-    - sklearn
-    - seaborn
-    - scipy
+    - ```tensorflow```, ```tensorflow_datasets```, ```keras```
+    - ```numpy```
+    - ```matplotlib```
+    - ```sklearn```
+    - ```seaborn```
+    - ```scipy```
 
 ## Usage
 **Run Fashion MNIST demo**
