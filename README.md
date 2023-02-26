@@ -6,21 +6,9 @@ Justin Lee (UNI: jjl2245)
 
 ## Project Summary
 
-<details><summary>Background</summary>
-<p>
-
 Classification tasks require a model to learn how to take an input and assign it a label. Most classification tasks are closed-set classification tasks; in other words, the model assumes that the test data contains the same set of labels as the train data. The major shortcoming of this approach is real-world applicability: in many real-world problems, we may never be able to foresee and exhaust all possible classes during training. Open-set classifiers, on the other hand, acknowledge an incomplete knowledge of the label space and are classifiers that can reject the input and label it as “unknown” rather than assigning it an incorrect label. 
 
-</p>
-</details>
-
-<details><summary>Goal</summary>
-<p>
-
-- Tackle the open-set image classification problem by building open-set image classification models that can not only accurately classify images from known classes, but also accurately reject images from unknown classes. 
-
-</p>
-</details>
+The goal of this project was to tackle the open-set image classification problem by building open-set image classification models that can not only accurately classify images from known classes, but also accurately reject images from unknown classes. 
 
 <details><summary>Approach</summary>
 <p>
@@ -30,7 +18,7 @@ Classification tasks require a model to learn how to take an input and assign it
 </p>
 </details>
 
-<details><summary>Applications and datasets</summary>
+<details><summary>Applications and Datasets</summary>
 <p>
 
 - In this project, I implemented the above approach and analyzde the feasibility and performance of the approach in 3 different applications:
@@ -44,7 +32,7 @@ Classification tasks require a model to learn how to take an input and assign it
 </p>
 </details>
 
-<details><summary>Analysis and evaluation</summary>
+<details><summary>Analysis and Evaluation</summary>
 <p>
 
 - An important part of this project was evaluating the performance of my models and efficacy of my approach for open-set image classification. Analysis was done as follows:
