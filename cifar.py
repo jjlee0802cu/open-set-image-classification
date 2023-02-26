@@ -91,21 +91,34 @@ test_x = test_x / 255.0
 
 print("\nTraining/Loading model")
 model_path = './saved_models/cifar_cnn.h5'
-train = True
+train = False
 
 model = keras.Sequential()
-model.add(keras.layers.Conv2D(32, 3, padding='same', activation='relu', input_shape=train_x[0].shape))
-model.add(keras.layers.BatchNormalization())
-model.add(keras.layers.Conv2D(64, 3, padding='same', activation='relu'))
+model.add(keras.layers.Conv2D(128, 3, padding='same', activation='relu', input_shape=train_x[0].shape))
 model.add(keras.layers.BatchNormalization())
 model.add(keras.layers.Conv2D(128, 3, padding='same', activation='relu'))
 model.add(keras.layers.BatchNormalization())
 model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+model.add(keras.layers.Dropout(0.3))
+model.add(keras.layers.Conv2D(256, 3, padding='same', activation='relu'))
+model.add(keras.layers.BatchNormalization())
+model.add(keras.layers.Conv2D(256, 3, padding='same', activation='relu'))
+model.add(keras.layers.BatchNormalization())
+model.add(keras.layers.Conv2D(256, 3, padding='same', activation='relu'))
+model.add(keras.layers.BatchNormalization())
+model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+model.add(keras.layers.Dropout(0.3))
+model.add(keras.layers.Conv2D(512, 3, padding='same', activation='relu'))
+model.add(keras.layers.BatchNormalization())
+model.add(keras.layers.Conv2D(512, 3, padding='same', activation='relu'))
+model.add(keras.layers.BatchNormalization())
+model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+model.add(keras.layers.Dropout(0.3))
 model.add(keras.layers.Flatten())
-model.add(keras.layers.Dense(128, activation=tf.nn.relu))
+model.add(keras.layers.Dense(512, activation=tf.nn.relu))
 model.add(keras.layers.BatchNormalization())
 model.add(keras.layers.Dropout(0.3))
-model.add(keras.layers.Dense(128, activation=tf.nn.relu))
+model.add(keras.layers.Dense(512, activation=tf.nn.relu))
 model.add(keras.layers.BatchNormalization())
 model.add(keras.layers.Dropout(0.3))
 model.add(keras.layers.Dense(50, activation=tf.nn.softmax))
@@ -119,33 +132,22 @@ if train:
     augmeter = ImageDataGenerator(rotation_range=20, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
     augmeter.fit(train_x)
     # Fit and save (uses real-time augmeter which is generating batches of size 128 of augmented data)
-    model.fit(augmeter.flow(train_x, train_y, batch_size=128), validation_data=(val_x, val_y), batch_size=128, epochs=50)
+    model.fit(augmeter.flow(train_x, train_y, batch_size=128), validation_data=(val_x, val_y), batch_size=128, epochs=100)
     model.save(model_path)
 else:
-    model = keras.models.load_model(model_path)
+    model = keras.models.load_model(model_path, compile=False)
+    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 
 
-exit()
+
+
+
+
+
 
 
 print("\nTesting model")
 threshold_to_test = np.linspace(0, 1, 200)
-# perform_analysis(model, test_x, test_y, threshold_to_test, 'cifar', 0.9, False)
+perform_analysis(model, test_x, test_y, threshold_to_test, 'cifar', 0.95, False)
 
-
-
-
-
-
-correct,total = 0,0
-predictions = model.predict(test_x)
-for i in range(len(test_y)):
-    a = np.argmax(predictions[i])
-    b = test_y[i]
-
-    if b >= 0:
-        total += 1
-        if a == b:
-            correct += 1
-print(correct/total)
