@@ -16,11 +16,13 @@ def load_keras_dataset(dataset):
     return train_x, train_y, test_x, test_y
 
 def print_counts_from_numpy(x):
+    # prints the counts of each unique item in a numpy array (for debugging)
     elements, frequency = np.unique(x, return_counts=True)
     print(np.asarray((elements, frequency)).T)
 
 
 def load_omniglot(split='train'):
+    # Loads the omniglot dataset from tensorflow
     omniglot_x, omniglot_y = [], []
     ds = tfds.load("omniglot", split=split, as_supervised=True)
     for image, label in ds:
@@ -29,12 +31,17 @@ def load_omniglot(split='train'):
     return omniglot_x, omniglot_y
 
 def sign(num):
+    # returns 1 if input is non-negative. Returns -1 otherwise
     try:
         return 1 if num >= 0 else -1
     except:
         return 1 if min(num) >= 0 else -1
 
 def apply_threshold_top_N(threshold, predictions, N):
+    # Given a list or softmax outputs, apply a threshold to it
+    # If the argmax of softmax output is greater or equal to threshold, output that label
+    # Otherwise, output -1 (unknown)
+
     threshold_predictions = []
     for i in range(predictions.shape[0]):
         confidence = np.max(predictions[i])
@@ -45,12 +52,15 @@ def apply_threshold_top_N(threshold, predictions, N):
     return threshold_predictions
 
 def get_accuracy(dictionary):
+    # Given a dictionary with correct and total keys, return correct/total
     try:
         return dictionary['correct']/dictionary['total']
     except:
         return 1
 
 def perform_analysis(model, test_x, test_y, threshold_to_test, output_dir, cf_threshold, cf_annot=True):
+    # Performs analysis and saves graphs to output directory
+    
     predictions = model.predict(test_x)
 
     tpr_list = []
@@ -63,6 +73,7 @@ def perform_analysis(model, test_x, test_y, threshold_to_test, output_dir, cf_th
     for threshold in threshold_to_test:
         print("threshold:", threshold)
 
+        # Get top n predictions
         top_N_predictions = [apply_threshold_top_N(threshold, predictions, i) for i in range(1,n+1)]
         top_N_id_accuracy = [{'correct': 0, 'total': 0} for _ in range(len(top_N_predictions))]
 
@@ -109,12 +120,14 @@ def perform_analysis(model, test_x, test_y, threshold_to_test, output_dir, cf_th
         for k in range(len(top_N_id_accuracy)):
             id_accuracies[k].append(get_accuracy(top_N_id_accuracy[k]))
 
+    # Plot of top-1 accuracy
     plt.clf()
     plt.plot(threshold_to_test, id_accuracies[0])
     plt.xlabel('Threshold')
     plt.ylabel('Accuracy')
     plt.savefig('./plots/'+output_dir+'/id_accuracy.png')
 
+    # Plot of top-n accuracies in one graph
     plt.clf()
     for i in range(len(id_accuracies)):
         plt.plot(threshold_to_test, id_accuracies[i], label='Top-'+str(i+1))
@@ -123,6 +136,7 @@ def perform_analysis(model, test_x, test_y, threshold_to_test, output_dir, cf_th
     plt.ylabel('Accuracy')
     plt.savefig('./plots/'+output_dir+'/top_N_id_accuracy.png')
 
+    # Plot tpr, fpr, fnr, tnr in one graph
     plt.clf()
     plt.plot(threshold_to_test,  tpr_list, label='TPR')
     plt.plot(threshold_to_test,  fpr_list, label='FPR')
@@ -134,6 +148,7 @@ def perform_analysis(model, test_x, test_y, threshold_to_test, output_dir, cf_th
     plt.ylabel('Rates')
     plt.savefig('./plots/'+output_dir+'/all_rates.png')
 
+    # Plot an ROC curve
     plt.clf()
     plt.plot(fpr_list, tpr_list)
     plt.axis([-0.05, 1.05, -0.05, 1.05])
@@ -141,6 +156,7 @@ def perform_analysis(model, test_x, test_y, threshold_to_test, output_dir, cf_th
     plt.ylabel('True Positive Rate')
     plt.savefig('./plots/'+output_dir+'/roc.png')
 
+    # Plot a DET curve
     plt.clf()
     plt.axis('scaled')
     plt.plot(fpr_list, fnr_list)
@@ -150,7 +166,7 @@ def perform_analysis(model, test_x, test_y, threshold_to_test, output_dir, cf_th
     plt.ylabel('False Negative Rate')
     plt.savefig('./plots/'+output_dir+'/det.png')
 
-
+    # Make a confusion matrix using seaborn
     cm_test, cm_pred = [], []
     best_threshold_predictions = apply_threshold_top_N(cf_threshold, predictions, 1)
     for i in range(len(best_threshold_predictions)):

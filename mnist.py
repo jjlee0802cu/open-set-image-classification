@@ -144,6 +144,10 @@ else:
 
 
 
+
+
+# Perform tests on the model and evaluate its performance
+
 print("\nTesting model")
 threshold_to_test = np.linspace(0, 1, 200)
 perform_analysis(model, test_x, test_y, threshold_to_test, 'mnist', 0.9)

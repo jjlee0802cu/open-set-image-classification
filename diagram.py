@@ -1,6 +1,10 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
+'''
+Creates a few diagrams that I used in my project report
+to better explain the approach that I used
+'''
 
 bars = pd.DataFrame(dict(data=[0.1, 0.05, 0.08, 0.62, 0.1, 0.05]))
 line = pd.DataFrame(dict(data=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5]))

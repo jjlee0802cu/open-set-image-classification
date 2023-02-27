@@ -106,8 +106,18 @@ else:
     model = keras.models.load_model(model_path)
 
 
-print("\nTesting model")
 
+
+
+
+
+
+
+
+# Perform tests on the model and evaluate its performance
+
+
+print("\nTesting model")
 
 threshold_to_test = np.linspace(0, 1, 50)
 perform_analysis(model, test_x, test_y, threshold_to_test, 'fashion_mnist', 0.8)

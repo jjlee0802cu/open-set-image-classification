@@ -145,7 +145,7 @@ else:
 
 
 
-
+# Perform tests on the model and evaluate its performance
 
 print("\nTesting model")
 threshold_to_test = np.linspace(0, 1, 200)
