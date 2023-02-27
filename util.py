@@ -142,7 +142,9 @@ def perform_analysis(model, test_x, test_y, threshold_to_test, output_dir, cf_th
     plt.savefig('./plots/'+output_dir+'/roc.png')
 
     plt.clf()
+    plt.axis('scaled')
     plt.plot(fpr_list, fnr_list)
+    plt.plot([0,1], [0,1], linestyle='dashed')
     plt.axis([-0.05, 1.05, -0.05, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('False Negative Rate')
